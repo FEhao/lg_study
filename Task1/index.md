@@ -96,3 +96,10 @@ for (let i = 0; i < 3; i++) {
 
    3. 可用于模板引擎
 
+6. ````javascript
+   var a = [1,2,3]
+   console.log(a) // [1,2,3]
+   console.log.apply(null, a) //	1,2,3 -> apply接受数组格式参数，将其中每项当参数传给调用的fn
+   ````
+
+7. 
