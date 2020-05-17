@@ -102,4 +102,85 @@ for (let i = 0; i < 3; i++) {
    console.log.apply(null, a) //	1,2,3 -> apply接受数组格式参数，将其中每项当参数传给调用的fn
    ````
 
-7. 
+7. ***proxy 与 defineProperty***
+
+8. Reflect成员方法就是Proxy处理对象的默认实现，Reflect的意义在于统一提供一套用于操作对象的API
+
+9. ````javascript
+   var obj = {
+     name: '',
+     age: 18
+   }
+   console.log('name' in obj)
+   console.log(delete obj['age'])
+   console.log(Object.keys(obj))
+   //	统一操作
+   console.log(Reflect.has(obj, 'name'))
+   console.log(Reflect.deleteProperty(obj, 'age'))
+   console.log(Reflect.ownkeys(obj))
+   ````
+
+10. obj[xxx] = 'value'，会将xxx的toString结果作为key，如xxx为对象的话，则key为[object, Object]，而es6的Map数据结构中，可以按照xxx本身的值保存键值对：
+
+11. ````javascript
+    const m = new Map()
+    const tom = { name: 'tom' }
+    m.set(tom, 90)
+    console.log(m)
+    console.log(m.get(tom))
+    ````
+
+12. ***Symbol最主要的作用就是为对象添加独一无二的属性名，适合作为对象的私有属性***
+
+13. for of推荐作为遍历所有数据结构的统一方式，可用break终止循环；for of适用于伪数组(arguments, dom节点列表)
+
+14. ***实现Iterable接口就是for...of的前提，如数组，Set，Map都满足该接口（手动实现一个）***
+
+15. ***迭代器模式***
+
+16. ***生成器应用***
+
+17. ES2016
+
+    1. Array.prototype.includes（之前的indexOf有缺陷，不能用于查找NaN）
+    2. 指数运算符：Math.pow(2, 10) -> 2 ** 10
+
+18. ES2017
+
+    1. Object.values
+
+    2. Object.entries
+
+       1. ````javascript
+          for (const [key, value] of Object.entries(obj)) {  
+          }
+          console.log(new Map(Object.entries(obj)))
+          ````
+
+    3. Object.getOwnPropertyDescriptors 用于获得属性完整的描述信息
+
+       1. ````javascript
+          const p1 = {
+            firstname: 'aaa',
+            lastName: 'bbb',
+            get fullName() {
+              return this.firstName + ' ' + this.lastName
+            }
+          }
+          
+          const p2 = Object.assign({}, p1)
+          p2.firstName = 'test'
+          console.log(p2) // 'aaa bbb' Object.assign无法传递属性的描述信息
+          
+          const descriptors = Object.getOwnPropertyDescriptors(p1)
+          const p2 = Object.defineProperties({}, descriptors) 
+          p2.firstName = 'test'
+          console.log(p2) // test bbb
+          ````
+
+    4. String.prototype.padStart/padEnd
+
+    5. Async/Await
+
+19. 在函数参数中添加尾逗号
+
