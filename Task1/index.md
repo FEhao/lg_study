@@ -102,7 +102,7 @@ for (let i = 0; i < 3; i++) {
    console.log.apply(null, a) //	1,2,3 -> apply接受数组格式参数，将其中每项当参数传给调用的fn
    ````
 
-7. ***proxy 与 defineProperty***
+7. proxy 与 defineProperty: proxy监听的是整个对象而非属性，可代理更多操作，代理对象范围更广，但兼容较差；Proxy返回的是一个新对象,我们可以只操作新的对象达到目的,而Object.defineProperty只能遍历对象属性直接修改；
 
 8. Reflect成员方法就是Proxy处理对象的默认实现，Reflect的意义在于统一提供一套用于操作对象的API
 
@@ -130,22 +130,44 @@ for (let i = 0; i < 3; i++) {
     console.log(m.get(tom))
     ````
 
-12. ***Symbol最主要的作用就是为对象添加独一无二的属性名，适合作为对象的私有属性***
+12. Symbol作为新添加的原始类型，最主要的作用就是为对象添加独一无二的属性名，适合作为对象的私有属性，或者作为常量（如Application.DEV = Symbol('dev')）
 
-13. for of推荐作为遍历所有数据结构的统一方式，可用break终止循环；for of适用于伪数组(arguments, dom节点列表)
+    1. ````js
+       Symbol("foo") !== Symbol("foo")
+       const foo = Symbol()
+       const bar = Symbol()
+       typeof foo === "symbol"
+       typeof bar === "symbol"
+       let obj = {}
+       obj[foo] = "foo"
+       obj[bar] = "bar"
+       JSON.stringify(obj) // {}
+       Object.keys(obj) // []
+       Object.getOwnPropertyNames(obj) // []
+       Object.getOwnPropertySymbols(obj) // [Symbol(), Symbol()]
+       Reflect.ownKeys(obj) // [Symbol(), Symbol()]
+       // Symbol.for 方法可以检测上下文中是否已经存在使用该方法且相同参数创建的 symbol 值，如果存在则返回已经存在的值，如果不存在则新建。
+       const s1 = Symbol.for('foo');
+       const s2 = Symbol.for('foo');
+       console.log(s1 === s2); // true
+       ````
 
-14. ***实现Iterable接口就是for...of的前提，如数组，Set，Map都满足该接口（手动实现一个）***
+13. `Symbol.iterator` is a well-known symbol that’s used to assign a special method to objects, which allows them to be iterated over. The built-in types String, Array, TypedArray, Map and Set all have a default Symbol.iterator method which is called when an instance of one of these types is used in a for … of loop, or with the spread operator. Browsers are also starting to use the Symbol.iterator key to allow DOM structures such as NodeList and HTMLCollection to be iterated over in the same way.
 
-15. ***迭代器模式***
+14. for of推荐作为遍历所有数据结构的统一方式，可用break终止循环；for of适用于伪数组(arguments, dom节点列表)
 
-16. ***生成器应用***
+15. ***实现Iterable接口就是for...of的前提，如数组，Set，Map都满足该接口（手动实现一个）***
 
-17. ES2016
+16. ***迭代器模式***
+
+17. ***生成器应用***
+
+18. ES2016
 
     1. Array.prototype.includes（之前的indexOf有缺陷，不能用于查找NaN）
     2. 指数运算符：Math.pow(2, 10) -> 2 ** 10
 
-18. ES2017
+19. ES2017
 
     1. Object.values
 
@@ -182,5 +204,5 @@ for (let i = 0; i < 3; i++) {
 
     5. Async/Await
 
-19. 在函数参数中添加尾逗号
+20. 在函数参数中添加尾逗号
 
