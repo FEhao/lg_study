@@ -158,16 +158,17 @@ for (let i = 0; i < 3; i++) {
 
 15. ***实现Iterable接口就是for...of的前提，如数组，Set，Map都满足该接口（手动实现一个）***
 
-16. ***迭代器模式***
+16. 
+    1.  ***迭代器模式Iterator***
+    2.  ***生成器应用Generator***
+    3.  [参考](https://www.cnblogs.com/xiaohuochai/p/7253466.html)
 
-17. ***生成器应用***
-
-18. ES2016
+17. ES2016
 
     1. Array.prototype.includes（之前的indexOf有缺陷，不能用于查找NaN）
     2. 指数运算符：Math.pow(2, 10) -> 2 ** 10
 
-19. ES2017
+18. ES2017
 
     1. Object.values
 
@@ -204,5 +205,5 @@ for (let i = 0; i < 3; i++) {
 
     5. Async/Await
 
-20. 在函数参数中添加尾逗号
+19. 在函数参数中添加尾逗号
 
