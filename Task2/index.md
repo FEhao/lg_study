@@ -55,4 +55,91 @@
     function sum(a: number, b: number, ...rest: number[])
     ````
 
-14. 
+14. ````js
+    class Person {
+      name: string
+      age: number
+      gender: boolean
+      //	ts中，类属性在使用前必须先声明，上面这种声明方式是es7的标准
+      //	可加上访问修饰符private， protected，默认public
+      constructor (name: string, age: number) {
+        this.name = name
+        this.age = age
+      }
+    }
+    ````
+
+15. ````js
+    class Person {
+      name: string
+      age: number
+      private constructor (name: string, age: number) {
+        this.name = name
+        this.age = age
+      }
+    	//	private无法让外部直接new Person，可通过内部static方法
+    	static create(name: string, age: number) {
+        return new Person(name, age)
+      }
+    }
+    
+    const jack = Person.create('jack', 18)
+    ````
+
+16. ````js
+    //	类与接口
+    interface Eat {
+      eat(food: string): void
+    }
+    interface Run {
+      eat(distance: number): void
+    }
+    class Person implements Eat, Run {
+      eat(food: string): void {
+        xxx
+      }
+      run(distance: number) {
+        xxx
+      }
+    }
+    ````
+
+17. ```js
+    //	抽象类
+    abstract class Animal { //	abstact 只能子类继承，无法new创建实例对象
+      eat(food: string): void
+      	console.log()
+      }
+    	abstract run(distance: number): void //	abstact抽象方法，子类必须实现
+    }
+    
+    class Dog extends Animal {
+      run(distance: number): void {
+        console.log()
+      }
+    }
+    ```
+
+18. ````js
+    //	泛型
+    function createNumberArray(len: number, val: number): number[] {
+      const arr = Array<number>(length).fill(value)
+    }
+    function createStringArray(len: number, val: string): string[] {
+      const arr = Array<string>(length).fill(value)
+    }
+    function createArray<T>(len: number, val: T): T[] {
+      const arr = Array<T>(length).fill(value)
+    }
+    
+    const res = createArray<string>(3, 100)
+    ````
+
+19. ````js
+    import { camelCase } from 'lodash'
+    declare func camelCase(input: string): string
+    const res = camelCase('hi') //	无上一行的情况下，camelCase没有类型提示，为了兼容这种普通的模块，这种情况需要单独类型声明，社区把绝大多数的模块都进行了声明，安装使用@types/xxx 即可。也有很多模块在内部已经声明过，无需安装
+    ````
+
+20. 
+
