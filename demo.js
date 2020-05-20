@@ -1,15 +1,13 @@
-function foo() {
-  return () => {
-    return () => {
-      return () => {
-        console.log("id:", this.id);
-      };
-    };
-  };
-}
+setTimeout(() => {
+  console.log(1)
+  Promise.resolve().then(() => {
+    console.log(2)
+  })
+});
 
-var f = foo.call({id: 1});
-
-var t1 = f.call({id: 2})()();
-var t2 = f().call({id: 3})();
-var t3 = f()().call({id: 4});
+setTimeout(() => {
+  console.log(3)
+  Promise.resolve().then(() => {
+    console.log(4)
+  })
+});
