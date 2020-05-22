@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    function makeSala(base) {
+      return function(per) {
+        return base + per
+      }
+    }
+
+    let a1 = makeSala(100)
+    let a2 = makeSala(200)
+
+    console.log(a1(10))
+    console.log(a2(20))
+
+  </script>
+</body>
+</html>
