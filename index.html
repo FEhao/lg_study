@@ -1,24 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
+
 <body>
+  <button id="create">test</button>
   <script>
-    function makeSala(base) {
-      return function(per) {
-        return base + per
+    var detachedNodes;
+
+    function create() {
+      var ul = document.createElement('ul');
+      for (var i = 0; i < 10; i++) {
+        var li = document.createElement('li');
+        ul.appendChild(li);
       }
+      detachedTree = ul;
     }
 
-    let a1 = makeSala(100)
-    let a2 = makeSala(200)
-
-    console.log(a1(10))
-    console.log(a2(20))
-
+    document.getElementById('create').addEventListener('click', create);
   </script>
 </body>
+
 </html>

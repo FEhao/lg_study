@@ -1,20 +1,22 @@
-1. 界定内存问题的标准
+1. [Google Memory文档][https://developers.google.com/web/tools/chrome-devtools/memory-problems]
+
+2. 界定内存问题的标准
 
    1. 内存泄露：内存使用持续升高
    2. 内存膨胀：在多数设备上都存在性能问题
    3. 频繁垃圾回收：通过内存变化图进行分析
 
-2. 监控内存的几种方式
+3. 监控内存的几种方式
 
    1. 浏览器任务管理器
-   2. Timeline时序图记录
-   3. 堆快照查找分离DOM
+   2. Timeline时序图记录(Performance -> Memory)，可以通过JS Heap和Nodes的图来分析，详见链接
+   3. 堆快照查找分离DOM，在Memory里Take Heap snapshots
       1. 界面元素存活在DOM树上
       2. 垃圾对象时的DOM节点（从DOM树上脱离且没被引用）
       3. 分离状态的DOM节点（脱离但有引用，detached html element）
    4. 判断是否存在频繁的垃圾回收
 
-3. 代码优化
+4. 代码优化
 
    1. 慎用全局变量
 
