@@ -1,0 +1,10 @@
+{
+  "name": "grunt-proj",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "^1.1.0",
+    "grunt-contrib-clean": "^2.0.0"
+  }
+}
