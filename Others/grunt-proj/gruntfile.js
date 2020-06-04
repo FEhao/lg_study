@@ -35,10 +35,19 @@ module.exports = grunt => {
   // grunt.registerTask('default', ['foo', 'bar', 'async-task'])
 
   grunt.initConfig({
-    clean: {
-      temp: 'test/**'
+    sass: {
+      options: {
+        sourceMap: true,
+        implementation: sass,
+      },
+      main: {
+        files: {
+          'dist/css/main.css': 'src/scss/main.scss'
+        }
+      }
     }
   })
-  grunt.loadNpmTasks('grunt-contrib-clean')
+
+  grunt.loadNpmTasks('grunt-sass')
 }
 

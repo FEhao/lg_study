@@ -94,5 +94,59 @@
    grunt.loadNpmTasks('grunt-contrib-clean')
    ```
 
-   
+6. 常用插件
 
+   1. grunt-sass
+
+      ```js
+      grunt.initConfig({
+        sass: {
+          options: {
+            sourceMap: true,
+            implementation: sass,
+          },
+          main: {
+            files: {
+              "dist/css/main.css": "src/scss/main.scss",
+            },
+          },
+        },
+      });
+      grunt.loadNpmTasks("grunt-sass");
+      ```
+
+   2. babel
+
+      ```js
+      babel: {
+        options: {
+          presets: ['@babel/preset-env']
+        },
+          main: {
+            files: {
+              'dist/js/app.js': 'src/js/app.js'
+            }
+          }
+      }
+      //	避免grunt.loadNpmTasks(xxx)，可用load-grunt-tasks
+      ```
+
+   3. watch
+
+      ```js
+      //	grunt-contrib-watch
+      watch: {
+        js: {
+          files: ['src/js/*.js'],
+          task: ['babel']
+        },
+        css: {
+          files: ['src/scss/*.scss'],
+          task: ['sass']
+        }
+      }
+      ```
+
+7. Gulp
+
+8. 
