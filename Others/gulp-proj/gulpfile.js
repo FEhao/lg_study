@@ -1,17 +1,33 @@
-const { series, parallel } = require('gulp')
-const { Transform } = require('stream')
-const fs = require('fs')
-exports.stream = () => {
-  const readStream = fs.createReadStream('index.css')
-  const writeStream = fs.createWriteStream('index.min.css')
-  //  核心转换过程
-  const transform = new Transform({
-    transform: (chunk, encoding, callback) => {
-      const input = chunk.toString()
-      const output =  input.replace(/\s+/g, '').replace(/\/\*.+?\*\//g, '')
-      callback(null, output)
-    }
-  })
-  readStream.pipe(transform).pipe(writeStream)
-  return readStream
-}
+const { src, dest } = require("gulp");
+const { parallel }  = require('gulp')
+const sass = require("gulp-sass");
+const babel = require("gulp-babel");
+const swig = require("gulp-swig");
+
+const style = () => {
+  return src("src/assets/styles/*.scss", { base: "src" })
+    .pipe(sass({ outputStyle: "expanded" }))
+    .pipe(dest("dist"));
+};
+
+const scripts = () => {
+  return src("src/assets/scripts/*.js", { base: "src" })
+    .pipe(babel({ presets: ["@babel/preset-env"] }))
+    .pipe(dest("dist"));
+};
+
+const page = () => {
+  return src("src/*.html")
+    .pipe(
+      swig({
+        data: { pkg: { name: "name_test" } },
+      })
+    )
+    .pipe(dest("dist"));
+};
+
+const compile = parallel(style, scripts, page)
+
+module.exports = {
+  compile,
+};
