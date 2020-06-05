@@ -355,3 +355,25 @@
       12. 最后暴露出去的方法有`clean`, 'build', 'develop'
 
    6. 封装自动化构建工作流
+
+      1. 目前上面有了一个可以正常工作的项目，现在把它封装并测试
+
+      2. 新建一个将用于发布的脚手架项目，将原项目的gulpfile.js复制到脚手架项目（后称cli）的index.js，将原项目的dev依赖复制到cli的dependencies，删除原项目中的gulpfiles和dev依赖
+
+      3. 目前还未将脚手架项目上线，在cli中yarn link，再在原项目中yarn link cli-proj-name，此时cli项目会被链接到老项目的node_modules中，老项目中的gulpfile之前已经被删除，现在可以替换成cli中的内容，也就是复制过来的gulpfile。
+
+         ```js
+         module.exports = require('cli-proj-name')
+         ```
+
+      4. 此时，在老项目中执行gulp build，但gulp，gulp-cli暂时还得当成一个dev依赖安装下，另外，原gulpfile里的data应该以配置文件的形式也提取出来，如提取到应用项目的pages.config.js
+
+         ```js
+         let config = {} //	default config
+         try {
+           const loadConfig = require(`${process.cwd}/page.config.js`)
+           config = Object.assign({}, config, loadConfig)
+         } catch() {}
+         ```
+
+         
