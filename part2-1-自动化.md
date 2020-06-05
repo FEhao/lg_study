@@ -238,4 +238,120 @@
       }
       ```
 
-      
+   5. 实战项目思路（[具体代码](https://github.com/FEhao/zce-gulp-demo/blob/master/gulpfile.js)）
+
+      1. 对于不同类型的文件，方式都是从src路径下pipe到dest路径，中间经过plugins处理
+
+      2. 处理完style，js，html以及图片字体等文件后，可创建一个compile并行任务
+
+         ```js
+         const compile = paraller(style, script, page，image, font)
+         ```
+
+      3. 对于其他类型的文件如public，直接复制，创建extra任务
+
+         ```js
+         const build = paraller(compile, extra)
+         ```
+
+      4. 旧目录的清除，创建clean任务（不是gulp插件但支持gulp pipe工作流）
+
+         ```js
+         const build = series(clean, paraller(compiler, extra))
+         ```
+
+      5. 插件过多可用`gulp-load-plugin`管理，可避免使用前一个个去声明
+
+      6. 热更新`browser-sync`，创建serve任务开启本地服务并监听dist目录下的文件变动
+
+         ```js
+         const serve = () => {
+           bs.init({
+             server: {
+               baseDir: 'dist',
+               files: 'dist/**',
+               routes: {
+                 '/node_modules': 'node_modules'
+                 // 将html模板中的此类文件代理到本地目录
+               }
+             }
+           })
+         }
+         ```
+
+      7. 以上只是完成了对dist目录的监听，但开发过程中是对src目录的修改，因此需要加上一步对src目录的监听并自动打包到dist，从而触发完整的更新流程。这里用到gulp自带的watch功能
+
+         ```js
+         const serve = () => {
+           watch('src/assets/styles/*.scss', style)
+           // 省略其他任务
+           bs.init(
+             ...
+           )
+         }
+         ```
+
+      8. 对于上面加的watch任务，其中有些任务在开发环境是没有必要的，比如图片压缩，为了加快构建速度，可以去掉，并把`init`中的`baseDir`改为`['dist', 'src', 'public']`，意思是如果在dist中找不到，则去它们里找文件
+
+         ```js
+         const compile = paraller(style, scripts, page)// 去掉了image，font，extra任务
+         
+         const develop = series(compile, serve)
+         
+         const build = series(clean, paraller(compile, image, font , extra))
+         ```
+
+         上面去掉了开发环境中没有必要的构建，但也去掉了监听这些文件的功能，因此得加上
+
+         ```js
+         watch(
+             ["src/assets/images/**", "src/assets/fonts/**", "public/**"], bs.reload
+           );
+         ```
+
+      9. useref文件引用处理
+
+         上面说到`'/node_modules': 'node_modules'`在开发环境进行了代理，但是在build流程中还没处理，这里会用到useref插件，它会去自动处理html中的构建注释
+
+         ```html
+           <!-- build:css assets/styles/vendor.css -->
+           <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.css">
+           <!-- endbuild -->
+           <!-- build:css assets/styles/main.css -->
+           <link rel="stylesheet" href="assets/styles/main.css">
+           <!-- endbuild -->
+         ```
+
+         会将`build`和`endbuild`之间的引用都打包至注释路径中，这个过程中可以进行其他操作，如压缩等
+
+         ```js
+         const useref = () => {
+           return src("dist/*.html")
+             .pipe(
+               plugins.useref({
+                 searchPath: ["dist", "."],
+               })
+             )
+             .pipe(plugins.if(/\.js$/, plugins.uglify()))
+             .pipe(plugins.if(/\.css$/, plugins.cleanCss()))
+             .pipe(plugins.if(/\.html$/, plugins.htmlmin()))
+             .pipe(dest("dist"));
+         };
+         
+         ```
+
+      10. 上面存在对同一文件读写的问题，为了避免，需要一个temp的dest路径作为中转
+
+      11. 优化构建路径，将普通任务的dest改为temp，image，font，extra因为于ref里的资源无关，仍是dist。useref从temp里取，打包到dist
+
+          ```js
+          const compile = paraller(style, scripts, page)// 去掉了image，font，extra任务
+          
+          const develop = series(compile, serve)
+          
+          const build = series(clean, paraller(series(compile, useref), image, font, extra))
+          ```
+
+      12. 最后暴露出去的方法有`clean`, 'build', 'develop'
+
+   6. 封装自动化构建工作流
