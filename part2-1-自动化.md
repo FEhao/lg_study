@@ -376,4 +376,50 @@
          } catch() {}
          ```
 
+         注意，原项目里的`presets: ['@babel/preset-env']`需要改成``presets: [require('@babel/preset-env')]``，这样会从cli的node_modules中找该模块，否则会报错（原项目已经删除了该依赖）
+
+      5. 原gulpfile中，文件路径较为固定，为了满足开发者需求，可以设为可配置的，加载config里
+
+         ```js
+         let config = {
+           build: [
+             src: 'src',
+             dist: 'dist',
+             ...
+             paths: {
+         	  	styles: 'assets/styles/*.scss',
+             	scripts: 'assets/scripts/*.js'
+             	...
+             }
+           ]
+         }
+         //	其他位置涉及到路径都修改。如
+         const style = () => {
+           return src(config.build.paths.styles, {base: config.build, cwd: config.build.src })
+           ...
+         }
+         ```
+
+      6. 应用到新项目里，目前还必须要配个gulpfile引用，这部分可以优化为
+
+         `yarn gulp build --gulpfile ./node_modules/zce-pages/lib/index.js --cwd .`
+
+         进一步优化，在cli中封装这个命令
+
+         ```js
+         // zce-page/bin/zce-pages.js
+         #!/usr/bin/env node
+         process.argv.push('--cwd')
+         process.argv.push(process.cwd())
+         process.argv.push('--gulpfile')
+         process.argv.push(require.resolve('..'))
          
+         require('gulp/bin/gulp')
+         
+         // 在package.json中需要配置bin
+         ```
+
+      7. 发布并使用模块
+
+8. FIS
+
