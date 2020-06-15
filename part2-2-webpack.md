@@ -238,7 +238,9 @@
 
           就是有三个文件，一个common的配置，一个dev，build的配置，在后两者中进行merge，考虑到普通的merge一般用Object.assign，不方便操作对象数组的merge，可用webpack-merge合并
 
-   21. DefinePlugin: 为代码注入全局成员，常见的如`process.env.NODE_ENV`
+   21. DefinePlugin: 为代码注入全局成员，常见的如`process.env.NODE_ENV`,第三方模块用的比较多。原理是在构建过程中，直接将值替换所用到的key
+
+   22. webpack在production mode下自动开启tree-shaking
 
        
 
