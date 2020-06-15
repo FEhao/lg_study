@@ -1,4 +1,4 @@
-const path = require("path");
+const webpack = require("webpack");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebpackPLugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
@@ -24,13 +24,15 @@ class MyPlugin {
 }
 
 module.exports = {
-  mode: "none",
+  mode: "production",
   entry: "./src/main.js",
   output: {
     // publicPath: 'dist/',
   },
+  devtool: 'source-map',
   devServer: {
-    contentBase: 'public'
+    contentBase: 'public',
+    hot: true,
   },
   module: {
     rules: [
@@ -61,6 +63,6 @@ module.exports = {
         },
       ],
     }),
-    // new MyPlugin(),
+    new webpack.HotModuleReplacementPlugin()
   ],
 };
