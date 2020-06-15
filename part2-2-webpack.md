@@ -37,7 +37,7 @@
         const html = marked(source);
       
         return `module.exports = ${JSON.stringify(html)}`;	可
-      };
+      }; 
       
       //	bundle.js
       (function(module, exports) {
@@ -81,17 +81,57 @@
       
       ```
 
-   4. 
+8. 
 
+9. Plugins通过钩子机制实现
 
-
-
-
-
-
-//	todo:
-
-	1.  none打包后分析bundle结构,6
- 	2.  入口是css时分析bundle,7
- 	3.  图片资源是如何体现在bundle里的 9
-
+   1. 插件会获取一个compiler传参，里面包含了配置信息以及多个钩子
+   
+   2. 插件必须得是我一个函数或者包含apply方法的对象
+   
+   3. 默认打包出来的js会有很多*号，这里写个插件去掉它们
+   
+      ```js
+      class MyPlugin {
+        apply(compiler) {
+          console.log("plugin start");
+          compiler.hooks.emit.tap("MyPlugin", (compilation) => {
+            //  compilation => 可以理解为此次打包的上下文
+            for (const name in compilation.assets) {
+              if (name.endsWith(".js")) {
+                const contents = compilation.assets[name].source()
+                const withoutCommnets = contents.replace(/\/\*\*+\*\//g, '')
+                compilation.assets[name] = {
+                  source: () => withoutCommnets,
+                  size: () => withoutCommnets.length
+                }
+              }
+            }
+          });
+        }
+      }
+      ```
+   
+   4. --watch，webpack自带监视功能，即可以更新dist目录，再搭配类似browser sync这样的插件，监听dist目录，即可完成常规的实时更新功能。但这里涉及到两次I/O读写，效率低
+   
+   5. dev server集成了自动编译与自动刷新浏览器等功能，提供了cli直接使用。直接`yarn webpack-dev-server`时，会自动打包并监听，打包结果存放在内存中。在开发阶段，静态资源一般都不需要copy插件复制到dist目录下，避免每次更新频繁重复执行打包任务（生产环境需要），所以这里需要单独配置下devServer中的contentBase去额外为开发服务器指定查找资源目录
+   
+   6. 一般项目都是同源部署，所以不需要开CORS，但本地存在开发阶段接口跨域问题
+   
+      ```js
+      devServer: {
+        proxy: {
+          '/api': {
+            target: 'https://api.github.com',
+              pathRewrite: {
+                '^/api': ''
+              },
+              changeOrigin: true
+          }
+        }
+      }
+      ```
+   
+   7. #### 问题：为什么cors，本地通过changeorigin就可以绕过限制
+   
+   8. 
