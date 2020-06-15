@@ -11,6 +11,4 @@ import axios from 'axios'
 
 axios.request('https://api.github.com/users')
 
-module.hot.accept('./logo.png', () => {
-	imgEle.src = img
-})
+console.log(API_BASE_URL)

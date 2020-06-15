@@ -2,7 +2,7 @@ const webpack = require("webpack");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebpackPLugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-
+const { DefinePlugin } = webpack;
 class MyPlugin {
   apply(compiler) {
     console.log("111111111111111");
@@ -11,12 +11,12 @@ class MyPlugin {
       //  compilation => 可以理解为此次打包的上下文
       for (const name in compilation.assets) {
         if (name.endsWith(".js")) {
-          const contents = compilation.assets[name].source()
-          const withoutCommnets = contents.replace(/\/\*\*+\*\//g, '')
+          const contents = compilation.assets[name].source();
+          const withoutCommnets = contents.replace(/\/\*\*+\*\//g, "");
           compilation.assets[name] = {
             source: () => withoutCommnets,
-            size: () => withoutCommnets.length
-          }
+            size: () => withoutCommnets.length,
+          };
         }
       }
     });
@@ -24,14 +24,14 @@ class MyPlugin {
 }
 
 module.exports = {
-  mode: "production",
+  mode: "none",
   entry: "./src/main.js",
   output: {
     // publicPath: 'dist/',
   },
-  devtool: 'source-map',
+  devtool: "source-map",
   devServer: {
-    contentBase: 'public',
+    contentBase: "public",
     hot: true,
   },
   module: {
@@ -63,6 +63,9 @@ module.exports = {
         },
       ],
     }),
-    new webpack.HotModuleReplacementPlugin()
+    // new webpack.HotModuleReplacementPlugin(),
+    new DefinePlugin({
+      API_BASE_URL: '"test_url"'
+    })
   ],
 };
