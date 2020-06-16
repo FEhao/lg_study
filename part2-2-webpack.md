@@ -240,8 +240,21 @@
 
    21. DefinePlugin: 为代码注入全局成员，常见的如`process.env.NODE_ENV`,第三方模块用的比较多。原理是在构建过程中，直接将值替换所用到的key
 
-   22. webpack在production mode下自动开启tree-shaking
+   22. webpack在production mode下自动开启tree-shaking，在none模式下，可在config中配置
 
-       
+       ```js
+       optimization: {
+         usedExports: true, // 不会将未用到的代码加到模块exports里，见下
+         minimize: true, // 打包时去掉上一步中的未用到的代码
+       }
+       ```
 
-       
+       如果只用到Button，第二第三行usedExports会去掉，minimize后，下面的Link和Heading也会去掉
+
+       ![image-20200616082902289](./Images/tree-shaking.png)
+
+   23. 普通的打包将每个模块放在一个单独的函数当中，可以concatenateModules合并，提升运行效率，减少体积
+
+   24. 有资料说babel会导致tree-shaking失效：TS前提是ES Modules，也就是由Webpack打包的代码必须使用ESM，而为了转换ESM中的新特性，会用到babel-loader，而最新的babel-loader中自动关闭了转换ESM的插件，因此TS可以正常使用。如果在babel配置中强制开启转换，如转换成`['@babel/preset-env': {modules: 'commonjs'}]`后，TS会失效
+
+   25. #### 问题，babel转换commonjs? 不转ESM?
