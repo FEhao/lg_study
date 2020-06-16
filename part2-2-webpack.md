@@ -81,9 +81,7 @@
       
       ```
 
-8. 
-
-9. Plugins通过钩子机制实现
+8. Plugins通过钩子机制实现
 
    1. 插件会获取一个compiler传参，里面包含了配置信息以及多个钩子
 
@@ -157,8 +155,6 @@
        3. 首次打包速度慢无所谓，重写打包相对较快
 
    11. 生产模式：none。理由：Source Map会暴露源代码，调试是开发阶段的事情。或者选nosources模式
-
-   12. #### 问题：复习source map
 
    13. devserver的监听导致浏览器刷新，会导致页面状态的丢失，如何做到不刷新的前提下，模块也可以及时更新——热更新
 
@@ -257,4 +253,25 @@
 
    24. 有资料说babel会导致tree-shaking失效：TS前提是ES Modules，也就是由Webpack打包的代码必须使用ESM，而为了转换ESM中的新特性，会用到babel-loader，而最新的babel-loader中自动关闭了转换ESM的插件，因此TS可以正常使用。如果在babel配置中强制开启转换，如转换成`['@babel/preset-env': {modules: 'commonjs'}]`后，TS会失效
 
-   25. #### 问题，babel转换commonjs? 不转ESM?
+   24. sideEffects一般用于npm包标记是否有副作用，开启方法为optimization中的sideEffects: true，生产模式默认开启，然后在package.json中加入sideEffects: false，表面项目中代码没有副作用。这样没用到的模块会被移除
+
+   25. 对于一些有副作用的模块，如css模块，或者js模块如 `import xxx.js`，xxx中对Number原型链进行了修改（副作用代码），那么应该在package.json中的sideEffects配置不需要处理的文件路径
+
+   26. Code Splitting
+
+       1. 多入口打包：多页配置
+       2. 动态导入：动态导入的模块会被自动分包
+
+   27. 魔法注释：在动态导入的地方加入注释，可自定义chunk名。如果用了同一个name，则会被打包到一起
+
+       ```js
+       if (xxx) {
+         import(/* webpackChunkName: 'posts' */ './post/posts').then(({default: posts}) => {
+           
+         })
+       }
+       ```
+
+   28. MiniCssExtractPlugin可单独提取css文件，注意需要替换掉style-loader。搭配OptimzieCssAssetsWebpackPlugin进行压缩
+
+   29. 三种哈希：hash, chunkhash, contenthash
