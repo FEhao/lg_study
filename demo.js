@@ -40,9 +40,39 @@
 
 // console.log(str)
 
-for(let i = 0; i< 10; i++) {
-  let str = ''
-  str += i
-  console.log(str)
+// for(let i = 0; i< 10; i++) {
+//   let str = ''
+//   str += i
+//   console.log(str)
+// }
+
+function Foo() {
+  t = function () {
+    console.log(1);
+  };
+  return this
 }
 
+Foo.t = function () {
+  console.log(2);
+};
+
+
+Foo.prototype.t = function () {
+  console.log(3);
+};
+
+var t = function() {
+  console.log(4)
+}
+
+function t() {
+  console.log(5)
+}
+
+Foo.t() // 2
+Foo().t()
+t() // 4
+new Foo.t() // 2
+new Foo().t() // 
+new new Foo().t()
