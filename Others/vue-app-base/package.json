@@ -3,15 +3,36 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "echo \"请使用 Webpack Dev Server 实现此任务\"",
-    "build": "echo \"请使用 Webpack 实现此任务\"",
+    "serve": "webpack-dev-server --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js",
     "lint": "echo \"请使用 ESLint 实现此任务\""
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "jquery": "^3.5.1",
     "vue": "^2.6.11"
   },
   "devDependencies": {
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
+    "@vue/babel-preset-app": "^4.4.4",
+    "@vue/cli-plugin-babel": "^4.4.4",
+    "babel": "^6.23.0",
+    "babel-loader": "^8.1.0",
+    "css-loader": "^3.6.0",
+    "file-loader": "^6.0.0",
+    "html-webpack-plugin": "^4.3.0",
+    "less": "^3.11.3",
+    "less-loader": "^6.1.1",
+    "style-loader": "^1.2.1",
+    "url-loader": "^4.1.0",
+    "vue-loader": "^15.9.2",
+    "vue-template-compiler": "^2.6.11",
+    "webpack": "^4.43.0",
+    "webpack-bundle-analyzer": "^3.8.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.11.0",
+    "webpack-merge": "^4.2.2"
   },
   "eslintConfig": {
     "root": true,
