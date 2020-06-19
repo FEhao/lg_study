@@ -1,5 +1,4 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const { DefinePlugin } = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -19,7 +18,7 @@ module.exports = {
   stats: {
     entrypoints: false,
     children: false,
-    modules: false
+    modules: false,
   },
   resolve: {
     extensions: [".vue", ".js"],
@@ -43,7 +42,7 @@ module.exports = {
         loader: "url-loader",
         options: {
           limit: 10 * 1024,
-          name: "img/[name].[hash:7].[ext]",
+          name: `img/[name]${isProd ? ".[hash:8]" : ""}.[ext]`,
           esModule: false,
         },
       },
@@ -70,7 +69,6 @@ module.exports = {
     },
   },
   plugins: [
-    new CleanWebpackPlugin(),
     new VueLoaderPlugin(),
     new DefinePlugin({
       BASE_URL: '"public/"',
@@ -78,7 +76,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: "lagou exam",
       template: "public/index.html",
-      favicon: 'public/favicon.ico'
+      favicon: "public/favicon.ico",
     }),
   ],
 };
