@@ -1,8 +1,26 @@
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const { DefinePlugin } = require("webpack");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+const isProd = process.env.NODE_ENV === "production";
+const CommonCssLoader = [
+  isProd ? MiniCssExtractPlugin.loader : "style-loader",
+  "css-loader",
+];
 
 module.exports = {
+  mode: process.env.NODE_ENV || "production",
   entry: "./src/main.js",
+  output: {
+    filename: `js/[name]${isProd ? ".[chunkhash:8]" : ""}.js`,
+  },
+  stats: {
+    entrypoints: false,
+    children: false,
+    modules: false
+  },
   resolve: {
     extensions: [".vue", ".js"],
   },
@@ -14,17 +32,18 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        loader: ["style-loader", "css-loader"],
+        loader: CommonCssLoader,
       },
       {
         test: /\.less$/,
-        loader: ["style-loader", "css-loader", "less-loader"],
+        loader: [...CommonCssLoader, "less-loader"],
       },
       {
         test: /\.(png|jpg|gif)$/i,
         loader: "url-loader",
         options: {
-          limit: 1000,
+          limit: 10 * 1024,
+          name: "img/[name].[hash:7].[ext]",
           esModule: false,
         },
       },
@@ -41,7 +60,7 @@ module.exports = {
         },
         jquery: {
           test: (module) => {
-            return /jquery/.test(module.context)
+            return /jquery/.test(module.context);
           },
           name: "jquery",
           chunks: "all",
@@ -51,9 +70,15 @@ module.exports = {
     },
   },
   plugins: [
+    new CleanWebpackPlugin(),
     new VueLoaderPlugin(),
     new DefinePlugin({
       BASE_URL: '"public/"',
+    }),
+    new HtmlWebpackPlugin({
+      title: "lagou exam",
+      template: "public/index.html",
+      favicon: 'public/favicon.ico'
     }),
   ],
 };
