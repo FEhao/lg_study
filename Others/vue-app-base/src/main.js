@@ -1,11 +1,8 @@
-import Vue from 'vue'
+import Vue from 'vue';
 import App from './App.vue';
-// import jquery from 'jquery'
-import './style.less'
+import './style.less';
 
-
-
-
+// var a = 1
 
 Vue.config.productionTip = false
 

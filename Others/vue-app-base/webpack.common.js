@@ -30,6 +30,11 @@ module.exports = {
         loader: "babel-loader",
       },
       {
+        test: /\.(js|vue)$/,
+        loader: "eslint-loader",
+        enforce: 'pre'
+      },
+      {
         test: /\.css$/,
         loader: CommonCssLoader,
       },

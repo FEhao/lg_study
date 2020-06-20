@@ -253,7 +253,7 @@
 
    24. 有资料说babel会导致tree-shaking失效：TS前提是ES Modules，也就是由Webpack打包的代码必须使用ESM，而为了转换ESM中的新特性，会用到babel-loader，而最新的babel-loader中自动关闭了转换ESM的插件，因此TS可以正常使用。如果在babel配置中强制开启转换，如转换成`['@babel/preset-env': {modules: 'commonjs'}]`后，TS会失效
 
-   24. sideEffects一般用于npm包标记是否有副作用，开启方法为optimization中的sideEffects: true，生产模式默认开启，然后在package.json中加入sideEffects: false，表面项目中代码没有副作用。这样没用到的模块会被移除
+   24. 副作用：模块执行时除了导出成员之外所做的事情。sideEffects一般用于npm包标记是否有副作用，开启方法为optimization中的sideEffects: true，生产模式默认开启，然后在package.json中加入sideEffects: false，表面项目中代码没有副作用。这样没用到的模块会被移除
 
    25. 对于一些有副作用的模块，如css模块，或者js模块如 `import xxx.js`，xxx中对Number原型链进行了修改（副作用代码），那么应该在package.json中的sideEffects配置不需要处理的文件路径
 

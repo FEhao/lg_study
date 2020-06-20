@@ -37,7 +37,7 @@ export default {
     msg: String
   },
   created() {
-    var a = 1
+    // var a = 1
   },
 }
 </script>
