@@ -37,3 +37,44 @@
    ```
 
 2. 简单的实现见vue_router_custom下的vue_router
+
+----
+
+#### Vue响应式原理
+
+1. Dep和Watcher
+
+   ```js
+   class Dep {
+     constructor() {
+       this.subs = [];
+     }
+   
+     addSub(sub) {
+       if (sub && sub.update) {
+         this.subs.push(sub);
+       }
+     }
+   
+     notify() {
+       this.subs.forEach((sub) => {
+         sub.update();
+       });
+     }
+   }
+   
+   class Watcher {
+     update() {
+       console.log("update");
+     }
+   }
+   
+   let dep = new Dep()
+   let watcher = new Watcher()
+   
+   dep.addSub(watcher)
+   
+   dep.notify()
+   ```
+
+   
