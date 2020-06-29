@@ -9,7 +9,10 @@ class Vue {
     this._proxyData(this.$data)
     // 注入到data中，与上面有一点不同
     new Observer(this.$data)
+    // 调用compiler对象，解析指令和插值表达式
+    new Compiler(this)
   }
+  
   _proxyData(data) {
     Object.keys(data).forEach(key => {
       Object.defineProperty(this, key, {

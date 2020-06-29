@@ -13,6 +13,8 @@ class Observer {
     });
   }
   defineReactive(obj, key, val) {
+    let that = this
+    this.walk(val) 
     Object.defineProperty(obj, key, {
       enumerable: true,
       configurable: true,
@@ -24,6 +26,7 @@ class Observer {
           return;
         }
         val = newVal;
+        that.walk(newVal) 
       },
     });
   }
