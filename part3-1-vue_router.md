@@ -81,6 +81,8 @@
 
    1. 每一个用到响应式数据的地方，如插值表达式，会新建一个Watcher，建立的同时，就会通过get方式获取oldValue，同时设置此时的Dep.target。那么，该响应数据的get方法中，也在对应的Dep里addSub。
    2. 每当响应数据改变，触发set，set中执行dep.notify，执行其subs里每个Watcher的update方法
-   3. 在1中定义的update被触发，视图更新
-   4. 双向绑定，如v-model，只需在用到的地方监听input事件，并赋值即可触发set
+   3. 在1中定义的update被触发，视图更新（注意视图首次是在compiler中更新，后续才是Watcher的回调里更新）
+   4. 双向绑定，如v-model，只需在用到的地方监听input事件，并赋值即可触发set。set中流程同2
+
+3. 简单实现见`mini-vue`，没有实现新增属性也为响应式，如vm.newProp = 123（官方也不支持），也没实现已有对象属性里添加新的子属性使其响应式（官方支持，需用Vue.set）
 
