@@ -77,4 +77,10 @@
    dep.notify()
    ```
 
-   
+2. 思路：
+
+   1. 每一个用到响应式数据的地方，如插值表达式，会新建一个Watcher，建立的同时，就会通过get方式获取oldValue，同时设置此时的Dep.target。那么，该响应数据的get方法中，也在对应的Dep里addSub。
+   2. 每当响应数据改变，触发set，set中执行dep.notify，执行其subs里每个Watcher的update方法
+   3. 在1中定义的update被触发，视图更新
+   4. 双向绑定，如v-model，只需在用到的地方监听input事件，并赋值即可触发set
+
