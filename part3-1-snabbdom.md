@@ -75,7 +75,7 @@
        let i: number, elm: Node, parent: Node
        const insertedVnodeQueue: VNodeQueue = []
        for (i = 0; i < cbs.pre.length; ++i) cbs.pre[i]()
-       // 如果oldVnode不是vnode(无sel)，有可能是真实dom节点，创建vnode并设置elm
+       // 如果oldVnode不是vnode(无sel)，有可能是真实dom节点，将其创建成vnode并设置elm
        if (!isVnode(oldVnode)) {
          oldVnode = emptyNodeAt(oldVnode)
        }
@@ -85,6 +85,7 @@
        } else {
          elm = oldVnode.elm!
          parent = api.parentNode(elm) as Node
+         // 转换为真实vnode（vnode中添加elm）
          createElm(vnode, insertedVnodeQueue)
          if (parent !== null) {
            api.insertBefore(parent, vnode.elm!, api.nextSibling(elm))
@@ -94,6 +95,15 @@
    
      }
    }
-   ```
+```
+   
+   1. `createElm(vnode, insertedVnodeQueue)`
+      1. 将vnode转换成对应的dom元素（未插入）
+      2. 执行data中用户定义的init钩子
+      3. 如果sel是!，vnode.elm赋值为注释节点，并返回vnode.elm
+      4. 如果sel有值，对其解析出hash，dot，tag，`api.createElement(tag)`创建元素，并根据hash, dot，设置id, class
+      5. 执行cbs中的create钩子
+      6. 对children判断，数组，则遍历，并执行`api.appendChild(elm, createElm(ch as VNode, insertedVnodeQueue))`；如果是普通值，则当文本节点`api.appendChild(elm, api.createTextNode(vnode.text))`
+      7. 执行data中的create hook，如果还有insert hook，则`insertedVnodeQueue.push(vnode)`
+      8. 其他情况，默认是文本节点，`vnode.elm = api.createTextNode(vnode.text!)`
 
-   1. 

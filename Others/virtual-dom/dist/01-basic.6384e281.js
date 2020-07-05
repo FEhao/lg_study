@@ -776,7 +776,16 @@ var _snabbdom = require("snabbdom");
 var patch = (0, _snabbdom.init)([]); // 第一个参数：标签 + 选择器
 // 第二个参数：如果是字符串的话就是标签中的内容
 
-var vnode = (0, _snabbdom.h)('div#container.cls', 'test');
+var vnode = (0, _snabbdom.h)('div#container.cls', {
+  hook: {
+    init: function init(vnode) {
+      console.log(vnode.elm);
+    },
+    create: function create(emptyVnode, vnode) {
+      console.log(vnode.elm);
+    }
+  }
+}, 'test');
 var app = document.querySelector('#app'); // 第一个参数：可以使DOM元素，内部会转换成vnode
 // 第二个参数：vnode
 // 返回值：vnode
@@ -812,7 +821,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62441" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64033" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
