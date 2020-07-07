@@ -98,6 +98,7 @@
 ```
    
    1. `createElm(vnode, insertedVnodeQueue)`
+   
       1. 将vnode转换成对应的dom元素（未插入）
       2. 执行data中用户定义的init钩子
       3. 如果sel是!，vnode.elm赋值为注释节点，并返回vnode.elm
@@ -106,7 +107,9 @@
       6. 对children判断，数组，则遍历，并执行`api.appendChild(elm, createElm(ch as VNode, insertedVnodeQueue))`；如果是普通值，则当文本节点`api.appendChild(elm, api.createTextNode(vnode.text))`
       7. 执行data中的create hook，如果还有insert hook，则`insertedVnodeQueue.push(vnode)`
       8. 其他情况，默认是文本节点，`vnode.elm = api.createTextNode(vnode.text!)`
+   
    2. `patchVnode(oldVnode, vnode, insertedVnodeQueue)`
+   
       1. 触发prepatch，update钩子函数
       2. 新节点有text属性，且不等于旧节点text属性
          1. 如果旧节点有children，移除对应DOM
@@ -120,4 +123,26 @@
       5. 只有老节点有children属性，移除所有老节点
       6. 只有老节点有text属性，清空对应DOM元素的textContent
       7. 触发postpatch钩子
+   
+   3. ##### updateChildren（diff重点）
+   
+   4. ![vnode](./Images/vnode.png)
+   
+      1. 开始节点与结束节点比较，这两种情况类似
+         1. oldStartVnode/newStartVnode
+         2. oldEndVnode/newEndVnode
+         3. 举例：如果oldStartVnode和newStartVnode是sameVnode(key, sel相等)，调用patchVnode对比和更新节点。把新旧的开始索引都往后移动，oldStartIndex++, oldEndIndex++
+         4. end节点同理，index--
+      2. 旧开始节点/新结束节点比较（左上角到右下角），如果相同，patchVnode，将旧开始节点移动至最后，oldStartIndex++，newEndIndex--
+      3. 反之亦然，右上角到左下角，相同，则旧结束节点移动至第一个位置，oldEndIndex--, newStartIndex++
+      4. 以上四种情况都没找到，则在oldVnode中寻找与newStartNode具有相同key值的节点
+         1. 没找到，说明是个新节点，创建新的DOM元素，并插入到oldVnode最前面
+         2. 找到了
+            1. 判断新老节点sel选择器是否相同。不同，说明被修改，重新创建对应的DOM并插入
+            2. 相同，把oldVnode中对应的elmToMove移动到最前面
+      5. 循环结束
+         1. 当老节点遍历完，即oldStartIndex > oldEndIndex；说明新节点还有剩余，把剩余节点批量插入到oldVnode右边
+         2. 当新节点遍历完，即newStartIndex > newEndIndex；说明老节点有剩余，把剩余节点批量删除
+   
+   5. 带key和不带key的区别：不带key的时候，sel和key(undefined)都相等的情况下，也就是新老节点为sameVnode，会走patchVnode流程，更新内容。带key的时候，会走其他流程（新老节点不为same，会进行查找），进行排序而不是修改内容
 
