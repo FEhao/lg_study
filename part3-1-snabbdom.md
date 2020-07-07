@@ -106,4 +106,18 @@
       6. 对children判断，数组，则遍历，并执行`api.appendChild(elm, createElm(ch as VNode, insertedVnodeQueue))`；如果是普通值，则当文本节点`api.appendChild(elm, api.createTextNode(vnode.text))`
       7. 执行data中的create hook，如果还有insert hook，则`insertedVnodeQueue.push(vnode)`
       8. 其他情况，默认是文本节点，`vnode.elm = api.createTextNode(vnode.text!)`
+   2. `patchVnode(oldVnode, vnode, insertedVnodeQueue)`
+      1. 触发prepatch，update钩子函数
+      2. 新节点有text属性，且不等于旧节点text属性
+         1. 如果旧节点有children，移除对应DOM
+         2. 设置新节点对应DOM元素的textContent
+      3. 新老节点都有children，且不等
+         1. 调用updateChildren()
+         2. 对比子节点，并且更新子节点的差异
+      4. 只有新节点有children属性
+         1. 如果老节点有text属性，清空对应DOM元素的textContent
+         2. 添加所有的子节点
+      5. 只有老节点有children属性，移除所有老节点
+      6. 只有老节点有text属性，清空对应DOM元素的textContent
+      7. 触发postpatch钩子
 
