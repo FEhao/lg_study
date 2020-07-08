@@ -95,9 +95,8 @@
    
      }
    }
-```
-   
-   1. `createElm(vnode, insertedVnodeQueue)`
+   ```
+ 1. `createElm(vnode, insertedVnodeQueue)`
    
       1. 将vnode转换成对应的dom元素（未插入）
       2. 执行data中用户定义的init钩子
@@ -145,4 +144,3 @@
          2. 当新节点遍历完，即newStartIndex > newEndIndex；说明老节点有剩余，把剩余节点批量删除
    
    5. 带key和不带key的区别：不带key的时候，sel和key(undefined)都相等的情况下，也就是新老节点为sameVnode，会走patchVnode流程，更新内容。带key的时候，会走其他流程（新老节点不为same，会进行查找），进行排序而不是修改内容
-
