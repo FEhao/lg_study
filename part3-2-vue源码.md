@@ -122,3 +122,55 @@
 
 ----
 
+#### Vue响应式
+
+1. _init中调用了initState方法，里面继续调用initData，其中的observe函数定义了数据的响应式：`observe(data, true /* asRootData */)`
+
+2. observe函数中，如果data中有\__ob__属性，则直接返回，否则`ob = new Observe(data)`并返回
+
+3. Observe是一个类
+
+   1. 每个实例都有一个dep属性，即`this.dep = new Dep()`
+   2. ` def(data, '__ob__', this)`，将\__ob__指向Observe类，并添加到监听对象中
+   3. 如果接收的是数组
+   4. 如果接收的是对象，则遍历属性，对每一个进行`defineReactive(obj, keys[i])`处理
+
+4. defineReactive
+
+   1. `const dep = new Dep()`
+
+   2. 如果该属性的属性描述符中，configurable为false，则return，不做处理
+
+   3. 如果不是shallow监听，对属性值进行observe监听，`childOb = !shallow && observe(val)`
+
+   4. 用Object.defineProperty设置getter和setter
+
+      1. getter中
+
+         1. 如果该属性之前用户定义过getter，则调用该getter，否则直接返回value。
+
+         2. 同时收集依赖：
+
+            ```js
+            if (Dep.target) { // Watcher对象
+            	dep.depend() // Dep.target.addDep(this)
+              if (childOb) {
+                childOb.dep.depend() //???????????   没懂  ????????????????
+                if (Array.isArray(value)) {
+                  dependArray(value)
+                }
+              }
+             }
+            ```
+
+            1. `Dep.target.addDep(this)`内部判断了下dep的id，如果该Watcher的newDepIds不含此id，Watcher会保存一份dep，最后`dep.addSub(this)`，又把操作转移到了dep里，让dep添加此Watcher到自己的subs里
+            2. 如果子属性的值也是个响应式对象，那么也需要进行dep.depend，因为子属性的改变（添加或删除），理应通知父级的Watcher
+            3. 注意这里有两个dep，一个是所有的observe对象都有一个dep，一个是defineReactive中的dep。
+
+      2. setter中
+
+         1. 先获取旧值。新旧值一样则return不处理，有预先定义的getter没setter，说明只读，也不处理。
+         2. 最后有用户定义的setter，则`setter.call(obj, newVal)`，否则直接val = newVal。
+         3. 对新值也要进行observe处理，同样也是`childOb = !shallow && observe(val)`。
+         4. 最后调用`dep.notify()`
+
