@@ -133,6 +133,11 @@
    1. 每个实例都有一个dep属性，即`this.dep = new Dep()`
    2. ` def(data, '__ob__', this)`，将\__ob__指向Observe类，并添加到监听对象中
    3. 如果接收的是数组
+      1. 拦截数组上的原型方法进行改写，相当于将该目标array的原型指向xxx，xxx又是继承自原生Array.prototype，对xxx进行了一些数组方法的改写，每次触发时：
+         1. 获取自身的Observe对象，`const ob = this.__ob__`
+         2. 对于一些添加了元素的操作，比如push，unshift, splice，将新添加的元素进行observe处理
+         3. 调用`ob.dep.notify()`
+         4. 返回的结果当然是通过apply取原生方法的结果
    4. 如果接收的是对象，则遍历属性，对每一个进行`defineReactive(obj, keys[i])`处理
 
 4. defineReactive
@@ -155,7 +160,7 @@
             if (Dep.target) { // Watcher对象
             	dep.depend() // Dep.target.addDep(this)
               if (childOb) {
-                childOb.dep.depend() //???????????   没懂  ????????????????
+                childOb.dep.depend()
                 if (Array.isArray(value)) {
                   dependArray(value)
                 }
@@ -163,9 +168,10 @@
              }
             ```
 
-            1. `Dep.target.addDep(this)`内部判断了下dep的id，如果该Watcher的newDepIds不含此id，Watcher会保存一份dep，最后`dep.addSub(this)`，又把操作转移到了dep里，让dep添加此Watcher到自己的subs里
+            1. `Dep.target.addDep(this)`内部判断了下dep的id，如果该Watcher的newDepIds不含此id（包含则不进行操作），Watcher会保存一份dep，最后`dep.addSub(this)`，又把操作转移到了dep里，让dep添加此Watcher到自己的subs里
             2. 如果子属性的值也是个响应式对象，那么也需要进行dep.depend，因为子属性的改变（添加或删除），理应通知父级的Watcher
-            3. 注意这里有两个dep，一个是所有的observe对象都有一个dep，一个是defineReactive中的dep。
+            3. 注意这里有两个dep，一个是所有的observe对象都有一个dep，一个是defineReactive中的dep。比如data中有个arr属性，当arr被重新赋值时，调用的是dep.depend的监听，当arr的数组发生变化时，调用的是childOb.dep.depend中的监听
+            4. 当数组中有对象，该对象的dep也会depend()，当数组中有数组，则递归调用dependArray
 
       2. setter中
 
@@ -174,3 +180,29 @@
          3. 对新值也要进行observe处理，同样也是`childOb = !shallow && observe(val)`。
          4. 最后调用`dep.notify()`
 
+   ---
+
+5. #### Watcher类
+
+   1. 分为三种，Computed Watcher，用户Watcher(侦听器)，渲染Watcher
+
+   2. 渲染Watcher
+
+      ```js
+       new Watcher(vm, updateComponent, noop, {
+          before () {
+            if (vm._isMounted && !vm._isDestroyed) {
+              callHook(vm, 'beforeUpdate')
+            }
+          }
+        }, true /* isRenderWatcher */)
+      ```
+
+      1. Watcher中，第二个参数为`expOrFn: string | Function`, 当为function时，`this.getter = expOrFn`, 当为字符串时，也就是在用户使用watch时，`this.getter = parsePath(expOrFn)`, 返回了一个函数，获取expOrFn的值
+      2. `this.value = this.lazy ? undefined : this.get()` computed计算属性时为lazy
+      3. 在get函数中
+         1. 先pushTarget(this)，做了两件事，1是将this push到targetStack中，然后Dep.target = this。targetStack的目的是当父子组件嵌套的时候，先把父组件对应的watcher入栈，再去处理子组件的watcher，子组件的处理完毕后，再把父组件对应的watcher出栈，继续操作
+         2. 执行getter函数，这个过程中完成了页面的渲染，数据的绑定
+      4. 当dep中执行notify，会触发Watcher类中的update方法
+
+   
