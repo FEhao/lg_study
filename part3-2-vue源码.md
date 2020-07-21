@@ -204,5 +204,27 @@
          1. 先pushTarget(this)，做了两件事，1是将this push到targetStack中，然后Dep.target = this。targetStack的目的是当父子组件嵌套的时候，先把父组件对应的watcher入栈，再去处理子组件的watcher，子组件的处理完毕后，再把父组件对应的watcher出栈，继续操作
          2. 执行getter函数，这个过程中完成了页面的渲染，数据的绑定
       4. 当dep中执行notify，会触发Watcher类中的update方法
+         1. 调用queueWatcher(this)
+         2. 判断has数组中有没有这个id，没有的话则has[id] = true，往下执行
+         3. 如果没在flushing，queue.push(watcher)放入队列
+         4. 执行flushSchedulerQueue
+            1. 首先flushing置为true
+            2. 将queue中的watcher按照id排序，确保：1. 父组件比子组件先更新，因为父组件永远比子组件先被create，2. user watcher（用户的watch任务）比render watcher先更新，因为也是先被create, 3.如果一个组件在父组件的watcher运行时被destroyed，它的watchers可以被跳过
+            3. 遍历watcher，如果有watcher.before则调用（beforeUpdate）
+            4. watcher.run()，里面调用watcher的get方法，重新收集一次依赖，同上面的3
+         5. resetSchedulerState，触发activate和updated钩子函数
+
+   ---
+
+   思维导图，https://kaiwu.lagou.com/xunlianying/index.html?courseId=17#/detail?weekId=756&lessonId=4381
+
+   
+
+   ---
+
+   1. 动态添加一个对象的新属性，不会被监听到变化，直接改数组中的index赋值，也不会。可以用Vue.set或者vm.$set进行动态添加响应式属性
+   2. 对于数组，其实里面用的是splice方法
+   3. 检查target上是否有\__ob__对象，有的话`defineReactive(ob.value, key, val)`; `ob.dep.notify()`
+   4. 例子：data: { obj: { p1: 1 } }，通过`vm.$set(vm.obj, 'p2', 2)`。首先获取到obj的\__ob__对象，这是在defineReactive中的`let childOb = !shallow && observe(val)`定义的，通过ob.value，可以获取到该value，也就是obj，进行上面的defineReactive操作后，发送通知。这里是怎么绑定watcher的呢，是因为渲染函数` new Watcher(vm, updateComponent, noop,...)`这里对vm进行了绑定，vm中，childOb的关系，data的dep也进行了渲染watcher的绑定，同理，data中的obj，也进行了绑定，所以可以直接`ob.dep.notify`
 
    
