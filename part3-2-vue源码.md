@@ -226,5 +226,7 @@
    2. 对于数组，其实里面用的是splice方法
    3. 检查target上是否有\__ob__对象，有的话`defineReactive(ob.value, key, val)`; `ob.dep.notify()`
    4. 例子：data: { obj: { p1: 1 } }，通过`vm.$set(vm.obj, 'p2', 2)`。首先获取到obj的\__ob__对象，这是在defineReactive中的`let childOb = !shallow && observe(val)`定义的，通过ob.value，可以获取到该value，也就是obj，进行上面的defineReactive操作后，发送通知。这里是怎么绑定watcher的呢，是因为渲染函数` new Watcher(vm, updateComponent, noop,...)`这里对vm进行了绑定，vm中，childOb的关系，obj的dep也进行了渲染watcher的绑定，所以可以直接`ob.dep.notify`
-
+5. 同理vm.$delete也可以删除对象中的属性(delete)或者数组中的元素(splice)，最后如果是对象的话，同样`ob.dep.notify()`
+   6. 
+   
    
