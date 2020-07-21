@@ -2,7 +2,7 @@
 
 2. vue源码的打包工具，使用的是rollup，比webpack轻量（Rollup只处理js，更适合在库中使用，也不会生成冗余代码）
 
-3. |                           |        价格        |       CommonJS        |                 ES Module                  |
+3. |                           |                    |       CommonJS        |                 ES Module                  |
    | ------------------------- | :----------------: | :-------------------: | :----------------------------------------: |
    | Full                      |       vue.js       |     vue.common.js     |                 vue.esm.js                 |
    | Runtime-only              |   vue.runtime.js   | vue.runtime.common.js | vue.runtime.esm.js （vue cli所使用的版本） |
@@ -216,17 +216,29 @@
 
    ---
 
-   思维导图，https://kaiwu.lagou.com/xunlianying/index.html?courseId=17#/detail?weekId=756&lessonId=4381
-
-   
-
-   ---
-
    1. 动态添加一个对象的新属性，不会被监听到变化，直接改数组中的index赋值，也不会。可以用Vue.set或者vm.$set进行动态添加响应式属性
-   2. 对于数组，其实里面用的是splice方法
+2. 对于数组，其实里面用的是splice方法
    3. 检查target上是否有\__ob__对象，有的话`defineReactive(ob.value, key, val)`; `ob.dep.notify()`
-   4. 例子：data: { obj: { p1: 1 } }，通过`vm.$set(vm.obj, 'p2', 2)`。首先获取到obj的\__ob__对象，这是在defineReactive中的`let childOb = !shallow && observe(val)`定义的，通过ob.value，可以获取到该value，也就是obj，进行上面的defineReactive操作后，发送通知。这里是怎么绑定watcher的呢，是因为渲染函数` new Watcher(vm, updateComponent, noop,...)`这里对vm进行了绑定，vm中，childOb的关系，obj的dep也进行了渲染watcher的绑定，所以可以直接`ob.dep.notify`
-5. 同理vm.$delete也可以删除对象中的属性(delete)或者数组中的元素(splice)，最后如果是对象的话，同样`ob.dep.notify()`
-   6. 
+4. 例子：data: { obj: { p1: 1 } }，通过`vm.$set(vm.obj, 'p2', 2)`。首先获取到obj的\__ob__对象，这是在defineReactive中的`let childOb = !shallow && observe(val)`定义的，通过ob.value，可以获取到该value，也就是obj，进行上面的defineReactive操作后，发送通知。这里是怎么绑定watcher的呢，是因为渲染函数` new Watcher(vm, updateComponent, noop,...)`这里对vm进行了绑定，vm中，childOb的关系，obj的dep也进行了渲染watcher的绑定，所以可以直接`ob.dep.notify`
    
-   
+6. 同理vm.$delete也可以删除对象中的属性(delete)或者数组中的元素(splice)，最后如果是对象的话，同样`ob.dep.notify()`
+
+7. 三种类型的watcher，按照初始化顺序(也是执行顺序)分别是：计算属性Watcher，用户Watcher(侦听器)，渲染Watcher
+
+8. 以侦听器Watcher为例
+
+   1. initWatcher中，获取`handler = watch[key]`
+   2. 执行createWatcher(vm, key, handler)，handler既可以是对象，就去获取对象中的handler属性，也可以是字符串，对应的是methods中的方法
+   3. 执行vm.$watch(key, handler, options)
+      1. options.user = true
+      2. `const watcher = new Watcher(vm, expOrFn, cb, options)`
+         1. 在Watcher类中，和上面响应式过程一样，通过get方法去绑定响应关系
+         2. 计算属性创建Watcher实例时，传入lazy=true，是因为computed属性不需要单独另外求值，在render中会去get值
+      3. 判断options中immediate属性，true，则cb.call(vm, watcher.value)
+
+---
+
+$nexttick利用的是微任务特性，根据浏览器兼容，使用promise.resolve或者MutationObserver，或者是setImmediate（最后会选setTimeout，性能比前者差一些）
+
+![p](./Images/响应式处理过程.png)
+
