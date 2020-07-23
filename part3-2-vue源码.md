@@ -218,6 +218,7 @@
 
    1. 动态添加一个对象的新属性，不会被监听到变化，直接改数组中的index赋值，也不会。可以用Vue.set或者vm.$set进行动态添加响应式属性
 2. 对于数组，其实里面用的是splice方法
+   
    3. 检查target上是否有\__ob__对象，有的话`defineReactive(ob.value, key, val)`; `ob.dep.notify()`
 4. 例子：data: { obj: { p1: 1 } }，通过`vm.$set(vm.obj, 'p2', 2)`。首先获取到obj的\__ob__对象，这是在defineReactive中的`let childOb = !shallow && observe(val)`定义的，通过ob.value，可以获取到该value，也就是obj，进行上面的defineReactive操作后，发送通知。这里是怎么绑定watcher的呢，是因为渲染函数` new Watcher(vm, updateComponent, noop,...)`这里对vm进行了绑定，vm中，childOb的关系，obj的dep也进行了渲染watcher的绑定，所以可以直接`ob.dep.notify`
    
@@ -241,4 +242,6 @@
 $nexttick利用的是微任务特性，根据浏览器兼容，使用promise.resolve或者MutationObserver，或者是setImmediate（最后会选setTimeout，性能比前者差一些）
 
 ![p](./Images/响应式处理过程.png)
+
+e
 
