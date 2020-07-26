@@ -48,4 +48,8 @@
       3. 如果是数据更新的时候，新旧节点是sameVnode执行patchVnode，也就是Diff
       4. 删除旧节点
    
+   ----
+   
+   ![s](./Images/渲染过程.png)
+   
    
