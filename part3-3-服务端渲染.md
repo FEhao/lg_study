@@ -62,6 +62,82 @@
 
    ----
 
-   
+   Nuxt
+
+    1. 路由
+
+        	1. 通过a链接，会导致刷新，走服务端渲染
+        	2. 通过<router-link>，和vue中的类似
+        	3. 编程式导航，在methods中调用this.$router.push，和vue中的类似
+
+    2. 动态路由
+
+        1. 在pages下的路由文件夹中，以下划线开头命名
+
+           ```
+           pages/
+           --| _slug/
+           -----| comments.vue
+           -----| index.vue
+           --| users/
+           -----| _id.vue
+           --| index.vue
+           ```
+
+           ```js
+           router: {
+             routes: [
+               {
+                 name: 'index',
+                 path: '/',
+                 component: 'pages/index.vue'
+               },
+               {
+                 name: 'users-id',
+                 path: '/users/:id?',
+                 component: 'pages/users/_id.vue'
+               },
+               {
+                 name: 'slug',
+                 path: '/:slug',
+                 component: 'pages/_slug/index.vue'
+               },
+               {
+                 name: 'slug-comments',
+                 path: '/:slug/comments',
+                 component: 'pages/_slug/comments.vue'
+               }
+             ]
+           }
+           ```
+
+   	3. 嵌套路由
+
+       	1. 创建内嵌子路由，需要添加一个Vue文件，同时添加一个与该文件同名的目录来存放子视图文件
+
+       	2. ```
+           pages/
+           --| users/
+           -----| _id.vue
+           -----| index.vue
+           --| users.vue
+           ```
+
+       	3. Warning: 别忘了在父组件(.vue文件) 内增加 <nuxt-child/> 用于显示子视图内容。
+
+   	4. 自定义路由配置
+
+   	5. 视图Layout：https://zh.nuxtjs.org/guide/views
+
+       ![s](./Images/nuxt.jpeg)
+
+       1. 自定义html模板
+       2. 扩展默认布局，类似于一个更简便的嵌套路由
+
+   	6. 异步数据asyncData
+
+       	1. 在服务端会调用，客户端路由更新前调用（同构渲染）
+       	2. 只能在页面组件中(pages)使用，如果要在子组件中使用，只能在page中获取再props传
+       	3. 没有this，是在组件初始化之前被调用的，但可通过第一个参数context，获取一些上下文信息，如params
 
    
