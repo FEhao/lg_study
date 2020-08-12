@@ -11,7 +11,7 @@
 
 4. 
    1. 完整版：同时包含编译器和运行时版本
-   2. 编译器compiler：用来将模板字符串编译成JS渲染函数的代码，体积大，效率大
+   2. 编译器compiler：用来将模板字符串编译成JS渲染函数的代码，体积大，效率低
    3. 运行时runtime：用来创建Vue实例，渲染并处理虚拟DOM等代码，体积小，效率高
    4. 如果使用了runtime-only版本，却又写的template，vue会报错：either pre compile the templates into render functions, or use the compiler-included build.
    5. UMD：UMD版本通用的模块版本，支持多种模块方式。vue.js默认文件就是运行时+编译器的UMD版本
