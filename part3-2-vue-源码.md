@@ -44,7 +44,7 @@
             2. extend(Vue.options.components, builtInComponents)，只是简单的添加属性，添加了keep-alive组件
             3. initUse(Vue)，注册插件。在Vue上添加use方法，接收一个plugin参数，先看Vue的_installedPlugins上有没有缓存过该plugin，没有则加，如果plugin有install属性且为函数，调用，否则如果本身为函数，调用。
             4. initMixin，在Vue上添加mixin方法，主要是用mergeOptions将参数配置混入到Vue的options配置中
-            5. initExtend，在Vue上添加extend方法，返回了一个以Vue为原型的构造函数，一般用于函数式/编程式的自定义组件。[参考掘金文章](https://juejin.im/post/5dd0a028e51d4507fc7252f6)，注意文末与Vue.component的区别
+            5. initExtend，在Vue上添加extend方法，返回了一个以Vue为原型的构造函数，一般用于函数式/编程式的自定义组件。[参考掘金文章](https://juejin.im/post/5dd0a028e51d4507fc7252f6)，注意文末与Vue.component的区别。https://juejin.im/post/6844903946088103949
             6. initAssetRegisters，注册directive，component，filter方法。
                1. 三个方法参数一致，都是id，definition(非必传)。
                2. 只传id，表示获取，返回this.options[type + 's']\[id]，参考上面的1
